@@ -38,12 +38,12 @@
 </svelte:head>
 
 {#if !$auth.isInitialized}
-	<div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+	<div class="min-h-screen flex items-center justify-center bg-cream-50 dark:bg-stone-900">
 		<div class="text-center">
 			<div
-				class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"
+				class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-amber-600 border-r-transparent"
 			></div>
-			<p class="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
+			<p class="mt-4 text-stone-500 dark:text-stone-400">Loading...</p>
 		</div>
 	</div>
 {:else}

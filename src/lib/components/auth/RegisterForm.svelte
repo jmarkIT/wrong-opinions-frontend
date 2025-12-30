@@ -60,7 +60,7 @@
 
 <form onsubmit={handleSubmit} class="space-y-4">
 	{#if error}
-		<div class="p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+		<div class="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-md">
 			{error}
 		</div>
 	{/if}
@@ -112,8 +112,8 @@
 		Create Account
 	</Button>
 
-	<p class="text-center text-sm text-gray-600 dark:text-gray-400">
+	<p class="text-center text-sm text-stone-500 dark:text-stone-400">
 		Already have an account?
-		<a href="/login" class="text-blue-600 hover:underline">Sign in</a>
+		<a href="/login" class="text-amber-700 dark:text-amber-500 hover:underline">Sign in</a>
 	</p>
 </form>

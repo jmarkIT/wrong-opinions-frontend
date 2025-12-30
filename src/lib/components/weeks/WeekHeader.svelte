@@ -13,16 +13,16 @@
 	const weekDisplay = $derived(formatWeekRange(year, weekNumber));
 </script>
 
-<div class="mb-6">
-	<h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+<div class="mb-8">
+	<h1 class="text-2xl font-bold text-stone-800 dark:text-cream-100 font-serif">
 		{weekDisplay}
 	</h1>
 	{#if ownerUsername}
-		<p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+		<p class="text-sm text-stone-500 dark:text-stone-400 mt-1">
 			{#if isOwner}
 				Your selections
 			{:else}
-				Selections by <span class="font-medium">{ownerUsername}</span>
+				Selections by <span class="font-medium text-stone-700 dark:text-stone-300">{ownerUsername}</span>
 			{/if}
 		</p>
 	{/if}

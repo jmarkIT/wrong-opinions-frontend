@@ -15,9 +15,9 @@
 	let { position, selection, isOwner = false, onRemove, onAdd }: Props = $props();
 </script>
 
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+<div class="bg-white dark:bg-stone-800 rounded-md border border-cream-200 dark:border-stone-700 overflow-hidden">
 	<div class="p-4">
-		<h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">
+		<h3 class="text-sm font-medium text-stone-500 dark:text-stone-400 mb-3">
 			Album {position}
 		</h3>
 
@@ -29,17 +29,17 @@
 					class="w-24 h-24 object-cover rounded"
 				/>
 				<div class="flex-1 min-w-0">
-					<h4 class="font-semibold text-gray-900 dark:text-white truncate">
+					<h4 class="font-semibold text-stone-800 dark:text-cream-100 truncate">
 						{selection.album.title}
 					</h4>
-					<p class="text-sm text-gray-600 dark:text-gray-400">
+					<p class="text-sm text-stone-600 dark:text-stone-400">
 						{selection.album.artist}
 					</p>
-					<p class="text-sm text-gray-500 dark:text-gray-500">
+					<p class="text-sm text-stone-500 dark:text-stone-500">
 						{extractYear(selection.album.release_date)}
 					</p>
 					{#if isOwner && onRemove}
-						<Button variant="danger" onclick={onRemove} class="mt-3 text-sm px-3 py-1">
+						<Button variant="danger" onclick={onRemove} class="mt-3 text-sm px-3 py-1.5">
 							Remove
 						</Button>
 					{/if}
@@ -47,9 +47,9 @@
 			</div>
 		{:else}
 			<div
-				class="flex flex-col items-center justify-center h-40 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg"
+				class="flex flex-col items-center justify-center h-40 border-2 border-dashed border-cream-300 dark:border-stone-600 rounded-md bg-cream-50 dark:bg-stone-800/50"
 			>
-				<p class="text-gray-500 dark:text-gray-400 mb-3">No album selected</p>
+				<p class="text-stone-500 dark:text-stone-400 mb-3">No album selected</p>
 				{#if isOwner && onAdd}
 					<Button variant="secondary" onclick={onAdd}>
 						Add Album

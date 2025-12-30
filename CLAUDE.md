@@ -144,6 +144,35 @@ The backend caches external API responses. When `cached: true`, some fields may 
 // Returns all albums ever selected, with week context
 ```
 
+## Design System
+
+### Typography
+- **Headings**: Source Serif 4 (Google Fonts) - warm, readable serif
+- **Body**: Source Sans 3 (Google Fonts) - clean sans-serif
+- Fonts loaded via `app.html`, applied via CSS custom properties in `app.css`
+
+### Color Palette (defined in `app.css` @theme)
+| Purpose | Light Mode | Dark Mode |
+|---------|-----------|-----------|
+| Background | `cream-50`, `cream-100` | `stone-900`, `stone-800` |
+| Text Primary | `stone-800` | `cream-100` |
+| Text Secondary | `stone-500`, `stone-600` | `stone-400` |
+| Accent/Primary | `amber-600`, `amber-700` | `amber-500` |
+| Success | `sage-600` | `sage-500` |
+| Error/Danger | `rose-500`, `rose-600` | `rose-500` |
+| Borders | `cream-200`, `cream-300` | `stone-700` |
+
+### Component Patterns
+- **Cards**: White background with `border border-cream-200` (not shadows), `rounded-md`
+- **Buttons**: `rounded-md`, amber primary, cream secondary, rose danger
+- **Inputs**: `rounded-md`, cream borders, amber focus ring
+- **Hover states**: Border color change to `amber-400` for cards, background darkening for buttons
+- **Loading spinners**: `border-amber-600`
+- **Error alerts**: `bg-rose-50 border-rose-200 text-rose-700`
+
+### Dark Mode
+Uses `prefers-color-scheme: dark` media query. Stone grays replace cream tones, text uses `cream-100`.
+
 ## Important Constraints
 
 - **Week Uniqueness**: Only one week per year+week_number globally. Attempting to create a duplicate returns 409.

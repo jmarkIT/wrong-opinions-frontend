@@ -54,11 +54,11 @@
 	{#if isLoading}
 		<div class="flex justify-center items-center h-64">
 			<div
-				class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"
+				class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-amber-600 border-r-transparent"
 			></div>
 		</div>
 	{:else if error}
-		<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+		<div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-md">
 			{error}
 		</div>
 	{:else if album}
@@ -68,21 +68,21 @@
 				<img
 					src={album.cover_art_url || ALBUM_PLACEHOLDER}
 					alt={album.title}
-					class="w-64 h-64 object-cover rounded-lg shadow-lg mx-auto md:mx-0"
+					class="w-64 h-64 object-cover rounded-md shadow-lg mx-auto md:mx-0"
 				/>
 			</div>
 
 			<!-- Info -->
 			<div class="flex-1">
-				<h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+				<h1 class="text-3xl font-bold text-stone-800 dark:text-cream-100 font-serif">
 					{album.title}
 				</h1>
 
-				<p class="text-xl text-gray-600 dark:text-gray-400 mt-2">
+				<p class="text-xl text-stone-600 dark:text-stone-400 mt-2">
 					{album.artist || 'Unknown Artist'}
 				</p>
 
-				<div class="flex flex-wrap gap-4 mt-4 text-sm text-gray-600 dark:text-gray-400">
+				<div class="flex flex-wrap gap-4 mt-4 text-sm text-stone-500 dark:text-stone-400">
 					{#if album.release_date}
 						<span>{formatReleaseDate(album.release_date)}</span>
 					{/if}
@@ -98,7 +98,7 @@
 					href="https://musicbrainz.org/release/{album.musicbrainz_id}"
 					target="_blank"
 					rel="noopener noreferrer"
-					class="inline-block mt-6 text-blue-600 hover:underline"
+					class="inline-block mt-6 text-amber-700 dark:text-amber-500 hover:underline"
 				>
 					View on MusicBrainz →
 				</a>
@@ -108,14 +108,14 @@
 		<!-- Artists -->
 		{#if credits?.artists && credits.artists.length > 0}
 			<section class="mt-12">
-				<h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Artists</h2>
+				<h2 class="text-xl font-semibold text-stone-800 dark:text-cream-100 font-serif mb-4">Artists</h2>
 				<div class="space-y-3">
 					{#each credits.artists as artist}
-						<div class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow">
-							<p class="font-medium text-gray-900 dark:text-white">
+						<div class="bg-white dark:bg-stone-800 rounded-md border border-cream-200 dark:border-stone-700 p-4">
+							<p class="font-medium text-stone-800 dark:text-cream-100">
 								{artist.name}
 							</p>
-							<div class="flex flex-wrap gap-3 mt-1 text-sm text-gray-600 dark:text-gray-400">
+							<div class="flex flex-wrap gap-3 mt-1 text-sm text-stone-500 dark:text-stone-400">
 								{#if artist.artist_type}
 									<span>{artist.artist_type}</span>
 								{/if}

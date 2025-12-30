@@ -124,7 +124,7 @@
 </svelte:head>
 
 <div class="max-w-4xl mx-auto px-4 py-8">
-	<h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Add Movie</h1>
+	<h1 class="text-2xl font-bold text-stone-800 dark:text-cream-100 font-serif mb-6">Add Movie</h1>
 
 	<form onsubmit={handleSearchSubmit} class="flex gap-3 mb-6">
 		<Input
@@ -141,7 +141,7 @@
 	{#if isSearching}
 		<div class="flex justify-center py-12">
 			<div
-				class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"
+				class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-amber-600 border-r-transparent"
 			></div>
 		</div>
 	{:else if results.length > 0}
@@ -160,7 +160,7 @@
 				<Button variant="secondary" onclick={prevPage} disabled={currentPage <= 1}>
 					Previous
 				</Button>
-				<span class="text-gray-600 dark:text-gray-400">
+				<span class="text-stone-500 dark:text-stone-400">
 					Page {currentPage} of {totalPages}
 				</span>
 				<Button variant="secondary" onclick={nextPage} disabled={currentPage >= totalPages}>
@@ -169,11 +169,11 @@
 			</div>
 		{/if}
 	{:else if hasSearched}
-		<p class="text-center text-gray-600 dark:text-gray-400 py-12">
+		<p class="text-center text-stone-500 dark:text-stone-400 py-12">
 			No movies found for "{query}"
 		</p>
 	{:else}
-		<p class="text-center text-gray-600 dark:text-gray-400 py-12">
+		<p class="text-center text-stone-500 dark:text-stone-400 py-12">
 			Enter a search term to find movies
 		</p>
 	{/if}
@@ -182,11 +182,11 @@
 <!-- Position Selection Modal -->
 {#if showPositionModal && selectedMovie}
 	<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" role="dialog">
-		<div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-sm w-full mx-4">
-			<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+		<div class="bg-white dark:bg-stone-800 rounded-md border border-cream-200 dark:border-stone-700 shadow-lg p-6 max-w-sm w-full mx-4">
+			<h2 class="text-lg font-semibold text-stone-800 dark:text-cream-100 font-serif mb-4">
 				Select Position
 			</h2>
-			<p class="text-gray-600 dark:text-gray-400 mb-4">
+			<p class="text-stone-600 dark:text-stone-400 mb-4">
 				Add "{selectedMovie.title}" to which position?
 			</p>
 			<div class="flex gap-3">
