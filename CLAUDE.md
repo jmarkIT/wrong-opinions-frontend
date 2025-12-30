@@ -42,8 +42,12 @@ src/
     ├── +layout.svelte # Root layout with auth guard
     ├── login/, register/
     ├── weeks/, weeks/current/, weeks/[id]/
-    ├── movies/, movies/[tmdbId]/
-    └── albums/, albums/[musicbrainzId]/
+    ├── movies/          # Add Movie (search)
+    ├── movies/all/      # All Movies (selections list)
+    ├── movies/[tmdbId]/ # Movie details
+    ├── albums/          # Add Album (search)
+    ├── albums/all/      # All Albums (selections list)
+    └── albums/[musicbrainzId]/ # Album details
 ```
 
 ## Key Architecture Patterns
@@ -128,6 +132,16 @@ The backend caches external API responses. When `cached: true`, some fields may 
 // GET /api/weeks?page=1&page_size=20&year=2025
 // Returns all weeks from all users
 // Use GET /api/weeks/{week_id} for full details with selections
+```
+
+### Browse All Selected Movies/Albums
+```javascript
+// GET /api/movies/selections?page=1&page_size=20
+// Returns all movies ever selected, with week context
+// Each movie includes selections[] array with week_id, year, week_number, position
+
+// GET /api/albums/selections?page=1&page_size=20
+// Returns all albums ever selected, with week context
 ```
 
 ## Important Constraints

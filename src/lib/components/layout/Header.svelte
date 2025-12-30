@@ -12,8 +12,10 @@
 	const navLinks = [
 		{ href: '/weeks/current', label: 'This Week' },
 		{ href: '/weeks', label: 'All Weeks' },
-		{ href: '/movies', label: 'Movies' },
-		{ href: '/albums', label: 'Albums' }
+		{ href: '/movies/all', label: 'All Movies' },
+		{ href: '/albums/all', label: 'All Albums' },
+		{ href: '/movies', label: 'Add Movie' },
+		{ href: '/albums', label: 'Add Album' }
 	];
 </script>
 

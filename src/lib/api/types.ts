@@ -214,6 +214,60 @@ export interface AddAlbumResponse {
 	album: WeekAlbum;
 }
 
+// Movie Selections
+export interface MovieSelectionWeek {
+	week_id: number;
+	year: number;
+	week_number: number;
+	position: number;
+	added_at: string;
+}
+
+export interface MovieWithSelections {
+	id: number;
+	tmdb_id: number;
+	title: string;
+	original_title: string | null;
+	release_date: string | null;
+	poster_path: string | null;
+	overview: string | null;
+	cached_at: string;
+	selections: MovieSelectionWeek[];
+}
+
+export interface MovieSelectionsResponse {
+	total: number;
+	page: number;
+	page_size: number;
+	results: MovieWithSelections[];
+}
+
+// Album Selections
+export interface AlbumSelectionWeek {
+	week_id: number;
+	year: number;
+	week_number: number;
+	position: number;
+	added_at: string;
+}
+
+export interface AlbumWithSelections {
+	id: number;
+	musicbrainz_id: string;
+	title: string;
+	artist: string;
+	release_date: string | null;
+	cover_art_url: string | null;
+	selections: AlbumSelectionWeek[];
+}
+
+export interface AlbumSelectionsResponse {
+	total: number;
+	page: number;
+	page_size: number;
+	results: AlbumWithSelections[];
+}
+
 // API Error
 export interface ApiError {
 	detail: string;
