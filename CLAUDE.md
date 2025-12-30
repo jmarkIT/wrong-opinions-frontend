@@ -1,0 +1,87 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+This is the frontend application for "Wrong Opinions" - a web application for tracking weekly movie and music selections. Users can search for movies (via TMDB) and albums (via MusicBrainz), then create weekly selections with up to 2 movies and 2 albums per ISO calendar week.
+
+**Backend API:** The backend runs at `http://localhost:8000` with API endpoints prefixed at `/api`. See API.md for complete endpoint documentation.
+
+**Key Domain Concepts:**
+- **ISO Week System**: Weeks are identified by year + week_number (1-53). Week 1 is the first week with at least 4 days in the new year. Weeks start on Monday.
+- **Week Ownership**: Only one week can exist per year+week_number globally (across all users). The user who creates the week owns it and can modify it. All authenticated users can view all weeks.
+- **Selections**: Each week can have 0-2 movies (position 1 and 2) and 0-2 albums (position 1 and 2).
+- **Authentication**: JWT-based authentication required for most endpoints. Token is obtained via `/api/auth/login` and sent as `Authorization: Bearer <token>` header.
+
+## API Architecture
+
+### Authentication Flow
+1. User registers via `POST /api/auth/register`
+2. User logs in via `POST /api/auth/login` to receive JWT token
+3. Token must be included in `Authorization: Bearer <token>` header for protected endpoints
+4. Token expiration returns 401 - client should redirect to login
+
+### Image URLs
+**TMDB Images:**
+- Search/details endpoints return full poster URLs
+- Week selections return only `poster_path` (path without base URL)
+- Construct full URL: `https://image.tmdb.org/t/p/w500/{poster_path}`
+- Available sizes: w92, w154, w185, w342, w500, w780, original
+- Backdrop sizes: w300, w780, w1280, original
+
+**MusicBrainz Cover Art:**
+- Full URLs provided in responses
+- May return 404 if unavailable
+
+### Rate Limiting
+**MusicBrainz**: Hard limit of 1 request per second. API returns 429 with `Retry-After` header if exceeded. Frontend should implement retry logic or queue requests.
+
+**TMDB**: 40 requests per 10 seconds (generous, unlikely to hit in normal usage).
+
+### Data Caching
+The backend caches external API responses. When `cached: true`, some fields may be `null` because only a subset is stored in cache.
+
+## Common Frontend Workflows
+
+### Display Current Week
+```javascript
+// GET /api/weeks/current returns the current ISO week
+// Auto-creates if doesn't exist
+// Returns week with movies[] and albums[] arrays
+```
+
+### Add Movie to Week
+```javascript
+// 1. Search: GET /api/movies/search?query=inception
+// 2. Get current week: GET /api/weeks/current
+// 3. Determine available position (1 or 2)
+// 4. Add: POST /api/weeks/{week_id}/movies
+//    Body: { tmdb_id: 27205, position: 1 }
+// 5. Handle 409 if position occupied
+```
+
+### Add Album to Week
+```javascript
+// 1. Search: GET /api/albums/search?query=dark+side+of+the+moon
+// 2. Get current week: GET /api/weeks/current
+// 3. Determine available position (1 or 2)
+// 4. Add: POST /api/weeks/{week_id}/albums
+//    Body: { musicbrainz_id: "uuid", position: 1 }
+// 5. Handle 429 rate limit (retry after delay)
+```
+
+### Browse Week History
+```javascript
+// GET /api/weeks?page=1&page_size=20&year=2025
+// Returns all weeks from all users
+// Use GET /api/weeks/{week_id} for full details with selections
+```
+
+## Important Constraints
+
+- **Week Uniqueness**: Only one week per year+week_number globally. Attempting to create a duplicate returns 409.
+- **Ownership**: Only the week owner (user_id) can add/remove movies/albums, update notes, or delete the week.
+- **Positions**: Movies and albums each support positions 1 and 2. Cannot add to occupied position (409 error).
+- **Date Formats**: All timestamps are ISO 8601 with UTC (e.g., `2025-12-28T16:05:00Z`). Release dates are ISO date format (`2025-12-28`). MusicBrainz dates may be partial (YYYY, YYYY-MM, or YYYY-MM-DD).
+- **Error Handling**: All errors return `{ "detail": "error message" }` format. Key status codes: 401 (auth), 403 (forbidden), 404 (not found), 409 (conflict), 422 (validation), 429 (rate limit).
