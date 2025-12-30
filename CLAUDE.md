@@ -2,6 +2,58 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Development Commands
+
+```bash
+npm run dev          # Start dev server at http://localhost:5173
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run check        # Run svelte-check for type errors
+```
+
+## Tech Stack
+
+- **SvelteKit** with TypeScript and Svelte 5 runes
+- **Tailwind CSS v4** via @tailwindcss/vite plugin
+- **Vite** for bundling
+
+## Project Structure
+
+```
+src/
+├── lib/
+│   ├── api/           # API client and endpoints
+│   │   ├── client.ts  # Base fetch wrapper with auth
+│   │   ├── types.ts   # TypeScript interfaces
+│   │   ├── auth.ts, movies.ts, albums.ts, weeks.ts
+│   ├── stores/        # Svelte stores
+│   │   ├── auth.ts    # Auth state (user, token)
+│   │   └── toast.ts   # Toast notifications
+│   ├── components/    # Reusable components
+│   │   ├── ui/        # Button, Input, Toast
+│   │   ├── layout/    # Header
+│   │   ├── movies/    # MovieCard, MovieSlot
+│   │   ├── albums/    # AlbumCard, AlbumSlot
+│   │   └── weeks/     # WeekCard, WeekHeader
+│   └── utils/         # Utilities
+│       ├── dates.ts   # ISO week formatting
+│       └── images.ts  # TMDB image URL helpers
+└── routes/
+    ├── +layout.svelte # Root layout with auth guard
+    ├── login/, register/
+    ├── weeks/, weeks/current/, weeks/[id]/
+    ├── movies/, movies/[tmdbId]/
+    └── albums/, albums/[musicbrainzId]/
+```
+
+## Key Architecture Patterns
+
+- **Auth Guard**: Root layout checks auth state, redirects to `/login` if unauthenticated
+- **Token Storage**: JWT stored in localStorage, auto-injected by API client
+- **401 Handling**: API client clears token and redirects to login on 401
+- **API Client**: All requests go through `src/lib/api/client.ts` which handles auth headers
+- **API Proxy**: Vite dev server proxies `/api` requests to backend at `localhost:8000` (configured in `vite.config.ts`)
+
 ## Project Overview
 
 This is the frontend application for "Wrong Opinions" - a web application for tracking weekly movie and music selections. Users can search for movies (via TMDB) and albums (via MusicBrainz), then create weekly selections with up to 2 movies and 2 albums per ISO calendar week.
