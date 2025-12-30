@@ -128,11 +128,11 @@
 </script>
 
 <svelte:head>
-	<title>Search Albums - Wrong Opinions</title>
+	<title>Add Album - Wrong Opinions</title>
 </svelte:head>
 
 <div class="max-w-4xl mx-auto px-4 py-8">
-	<h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Search Albums</h1>
+	<h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Add Album</h1>
 
 	<form onsubmit={handleSearchSubmit} class="flex gap-3 mb-6">
 		<Input

@@ -382,6 +382,66 @@ GET /api/movies/27205/credits?limit=5
 
 ---
 
+### List All Selected Movies
+
+#### `GET /api/movies/selections`
+
+List all movies that have been selected in any week, with week context.
+
+**Authentication:** Required
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `page` | integer | No | Page number (default: 1, min: 1) |
+| `page_size` | integer | No | Items per page (default: 20, min: 1, max: 100) |
+
+**Example Request:**
+
+```
+GET /api/movies/selections?page=1&page_size=20
+```
+
+**Response:** `200 OK`
+
+```json
+{
+  "total": 42,
+  "page": 1,
+  "page_size": 20,
+  "results": [
+    {
+      "id": 5,
+      "tmdb_id": 550,
+      "title": "Fight Club",
+      "original_title": "Fight Club",
+      "release_date": "1999-10-15",
+      "poster_path": "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
+      "overview": "A ticking-time-bomb insomniac and a slippery soap salesman...",
+      "cached_at": "2025-01-15T10:00:00Z",
+      "selections": [
+        {
+          "week_id": 12,
+          "year": 2025,
+          "week_number": 3,
+          "position": 1,
+          "added_at": "2025-01-15T10:30:00Z"
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Field Details:**
+- Results are sorted alphabetically by title
+- `selections` array contains all weeks where this movie was selected
+- Each selection includes the week context (year, week_number, position)
+- Movies without any selections are not included
+
+---
+
 ## Album Endpoints
 
 ### Search Albums
@@ -544,6 +604,64 @@ GET /api/albums/3f49f47e-0e67-4f90-a3c0-df47c9b4b8c9/credits?limit=5
 **Errors:**
 - `404 Not Found` - Album doesn't exist in MusicBrainz
 - `429 Too Many Requests` - Rate limit exceeded
+
+---
+
+### List All Selected Albums
+
+#### `GET /api/albums/selections`
+
+List all albums that have been selected in any week, with week context.
+
+**Authentication:** Required
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `page` | integer | No | Page number (default: 1, min: 1) |
+| `page_size` | integer | No | Items per page (default: 20, min: 1, max: 100) |
+
+**Example Request:**
+
+```
+GET /api/albums/selections?page=1&page_size=20
+```
+
+**Response:** `200 OK`
+
+```json
+{
+  "total": 35,
+  "page": 1,
+  "page_size": 20,
+  "results": [
+    {
+      "id": 15,
+      "musicbrainz_id": "3f49f47e-0e67-4f90-a3c0-df47c9b4b8c9",
+      "title": "The Dark Side of the Moon",
+      "artist": "Pink Floyd",
+      "release_date": "1973-03-01",
+      "cover_art_url": "https://coverartarchive.org/release/3f49f47e.../front",
+      "selections": [
+        {
+          "week_id": 12,
+          "year": 2025,
+          "week_number": 3,
+          "position": 1,
+          "added_at": "2025-01-15T10:45:00Z"
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Field Details:**
+- Results are sorted alphabetically by title
+- `selections` array contains all weeks where this album was selected
+- Each selection includes the week context (year, week_number, position)
+- Albums without any selections are not included
 
 ---
 
@@ -1160,6 +1278,82 @@ Remove an album from a week selection. Only the owner can remove albums from a w
       order: number
     }
   ]
+}
+```
+
+### Movie Selection Week
+
+```typescript
+{
+  week_id: number
+  year: number
+  week_number: number  // 1-53 (ISO week)
+  position: number  // 1 or 2
+  added_at: string  // ISO 8601 datetime
+}
+```
+
+### Movie with Selections
+
+```typescript
+{
+  id: number  // local database ID
+  tmdb_id: number
+  title: string
+  original_title: string | null
+  release_date: string | null  // YYYY-MM-DD
+  poster_path: string | null
+  overview: string | null
+  cached_at: string  // ISO 8601 datetime
+  selections: MovieSelectionWeek[]
+}
+```
+
+### Movie Selections List Response
+
+```typescript
+{
+  total: number
+  page: number
+  page_size: number
+  results: MovieWithSelections[]
+}
+```
+
+### Album Selection Week
+
+```typescript
+{
+  week_id: number
+  year: number
+  week_number: number  // 1-53 (ISO week)
+  position: number  // 1 or 2
+  added_at: string  // ISO 8601 datetime
+}
+```
+
+### Album with Selections
+
+```typescript
+{
+  id: number  // local database ID
+  musicbrainz_id: string  // UUID
+  title: string
+  artist: string
+  release_date: string | null  // YYYY-MM-DD
+  cover_art_url: string | null
+  selections: AlbumSelectionWeek[]
+}
+```
+
+### Album Selections List Response
+
+```typescript
+{
+  total: number
+  page: number
+  page_size: number
+  results: AlbumWithSelections[]
 }
 ```
 
