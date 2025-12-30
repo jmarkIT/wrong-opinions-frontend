@@ -78,15 +78,15 @@
 	<title>This Week - Wrong Opinions</title>
 </svelte:head>
 
-<div class="max-w-6xl mx-auto px-4 py-8">
+<div class="max-w-5xl mx-auto px-4 py-8">
 	{#if isLoading}
 		<div class="flex justify-center items-center h-64">
 			<div
-				class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"
+				class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-amber-600 border-r-transparent"
 			></div>
 		</div>
 	{:else if error}
-		<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+		<div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-md">
 			{error}
 		</div>
 	{:else if week}
@@ -99,7 +99,7 @@
 
 		<div class="grid md:grid-cols-2 gap-6">
 			<section>
-				<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Movies</h2>
+				<h2 class="text-lg font-semibold text-stone-700 dark:text-cream-100 mb-4 font-serif">Movies</h2>
 				<div class="space-y-4">
 					<MovieSlot
 						position={1}
@@ -119,7 +119,7 @@
 			</section>
 
 			<section>
-				<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Albums</h2>
+				<h2 class="text-lg font-semibold text-stone-700 dark:text-cream-100 mb-4 font-serif">Albums</h2>
 				<div class="space-y-4">
 					<AlbumSlot
 						position={1}
@@ -141,8 +141,8 @@
 
 		{#if week.notes}
 			<section class="mt-8">
-				<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Notes</h2>
-				<p class="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{week.notes}</p>
+				<h2 class="text-lg font-semibold text-stone-700 dark:text-cream-100 mb-2 font-serif">Notes</h2>
+				<p class="text-stone-600 dark:text-stone-400 whitespace-pre-wrap">{week.notes}</p>
 			</section>
 		{/if}
 	{/if}

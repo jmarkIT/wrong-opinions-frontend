@@ -69,11 +69,11 @@
 
 <div class="max-w-4xl mx-auto px-4 py-8">
 	<div class="flex items-center justify-between mb-6">
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">All Weeks</h1>
+		<h1 class="text-2xl font-bold text-stone-800 dark:text-cream-100 font-serif">All Weeks</h1>
 
 		<select
 			onchange={handleYearChange}
-			class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+			class="px-3 py-2.5 border border-cream-300 dark:border-stone-600 rounded-md bg-white dark:bg-stone-800 text-stone-800 dark:text-cream-100 focus:outline-none focus:ring-2 focus:ring-amber-500"
 		>
 			<option value="">All Years</option>
 			{#each yearOptions as year}
@@ -85,15 +85,15 @@
 	{#if isLoading}
 		<div class="flex justify-center py-12">
 			<div
-				class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"
+				class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-amber-600 border-r-transparent"
 			></div>
 		</div>
 	{:else if error}
-		<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+		<div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-md">
 			{error}
 		</div>
 	{:else if weeks.length > 0}
-		<p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+		<p class="text-sm text-stone-500 dark:text-stone-400 mb-4">
 			{totalCount} week{totalCount === 1 ? '' : 's'} found
 		</p>
 
@@ -108,7 +108,7 @@
 				<Button variant="secondary" onclick={prevPage} disabled={currentPage <= 1}>
 					Previous
 				</Button>
-				<span class="text-gray-600 dark:text-gray-400">
+				<span class="text-stone-500 dark:text-stone-400">
 					Page {currentPage} of {totalPages}
 				</span>
 				<Button variant="secondary" onclick={nextPage} disabled={currentPage >= totalPages}>
@@ -117,7 +117,7 @@
 			</div>
 		{/if}
 	{:else}
-		<p class="text-center text-gray-600 dark:text-gray-400 py-12">
+		<p class="text-center text-stone-500 dark:text-stone-400 py-12">
 			No weeks found
 		</p>
 	{/if}

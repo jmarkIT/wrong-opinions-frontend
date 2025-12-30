@@ -1,1 +1,52 @@
 @import 'tailwindcss';
+
+@theme {
+	/* Warm color palette */
+	--color-cream-50: #fdfcfa;
+	--color-cream-100: #f9f6f1;
+	--color-cream-200: #f3ede3;
+	--color-cream-300: #e8dfd1;
+
+	--color-stone-500: #78716c;
+	--color-stone-600: #57534e;
+	--color-stone-700: #44403c;
+	--color-stone-800: #292524;
+	--color-stone-900: #1c1917;
+
+	--color-amber-500: #d97706;
+	--color-amber-600: #b45309;
+	--color-amber-700: #92400e;
+
+	--color-sage-500: #6b7c6b;
+	--color-sage-600: #556b55;
+
+	--color-rose-500: #c45c5c;
+	--color-rose-600: #a84848;
+
+	/* Typography */
+	--font-sans: 'Source Sans 3', system-ui, sans-serif;
+	--font-serif: 'Source Serif 4', Georgia, serif;
+}
+
+/* Base styles */
+html {
+	font-family: var(--font-sans);
+	background-color: var(--color-cream-50);
+}
+
+/* Headings use serif font */
+h1, h2, h3 {
+	font-family: var(--font-serif);
+}
+
+/* Smooth transitions for interactive elements */
+button, a, input {
+	transition: all 0.15s ease;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+	html {
+		background-color: var(--color-stone-900);
+	}
+}
