@@ -169,6 +169,7 @@ The backend caches external API responses. When `cached: true`, some fields may 
 - **Hover states**: Border color change to `amber-400` for cards, background darkening for buttons
 - **Loading spinners**: `border-amber-600`
 - **Error alerts**: `bg-rose-50 border-rose-200 text-rose-700`
+- **Slot cards (MovieSlot/AlbumSlot)**: Fixed `h-36` content height for visual consistency. Movie posters fill the full height; album covers (square) are vertically centered within the container.
 
 ### Dark Mode
 Uses `prefers-color-scheme: dark` media query. Stone grays replace cream tones, text uses `cream-100`.
