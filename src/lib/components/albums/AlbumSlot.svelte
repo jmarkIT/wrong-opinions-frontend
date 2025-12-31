@@ -22,24 +22,28 @@
 		</h3>
 
 		{#if selection}
-			<div class="flex gap-4">
-				<img
-					src={selection.album.cover_art_url || ALBUM_PLACEHOLDER}
-					alt={selection.album.title}
-					class="w-24 h-24 object-cover rounded"
-				/>
-				<div class="flex-1 min-w-0">
-					<h4 class="font-semibold text-stone-800 dark:text-cream-100 truncate">
-						{selection.album.title}
-					</h4>
-					<p class="text-sm text-stone-600 dark:text-stone-400">
-						{selection.album.artist}
-					</p>
-					<p class="text-sm text-stone-500 dark:text-stone-500">
-						{extractYear(selection.album.release_date)}
-					</p>
+			<div class="flex gap-4 h-36">
+				<div class="w-24 h-36 flex items-center justify-center flex-shrink-0">
+					<img
+						src={selection.album.cover_art_url || ALBUM_PLACEHOLDER}
+						alt={selection.album.title}
+						class="w-24 h-24 object-cover rounded"
+					/>
+				</div>
+				<div class="flex-1 min-w-0 flex flex-col">
+					<div class="flex-1 overflow-hidden">
+						<h4 class="font-semibold text-stone-800 dark:text-cream-100 truncate">
+							{selection.album.title}
+						</h4>
+						<p class="text-sm text-stone-600 dark:text-stone-400 truncate">
+							{selection.album.artist}
+						</p>
+						<p class="text-sm text-stone-500 dark:text-stone-500">
+							{extractYear(selection.album.release_date)}
+						</p>
+					</div>
 					{#if isOwner && onRemove}
-						<Button variant="danger" onclick={onRemove} class="mt-3 text-sm px-3 py-1.5">
+						<Button variant="danger" onclick={onRemove} class="mt-2 text-sm px-3 py-1.5 self-start">
 							Remove
 						</Button>
 					{/if}
@@ -47,7 +51,7 @@
 			</div>
 		{:else}
 			<div
-				class="flex flex-col items-center justify-center h-40 border-2 border-dashed border-cream-300 dark:border-stone-600 rounded-md bg-cream-50 dark:bg-stone-800/50"
+				class="flex flex-col items-center justify-center h-36 border-2 border-dashed border-cream-300 dark:border-stone-600 rounded-md bg-cream-50 dark:bg-stone-800/50"
 			>
 				<p class="text-stone-500 dark:text-stone-400 mb-3">No album selected</p>
 				{#if isOwner && onAdd}
