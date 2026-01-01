@@ -490,6 +490,7 @@ GET /api/albums/search?query=dark+side+of+the+moon&limit=10
 
 **Field Details:**
 - `musicbrainz_id`: UUID format string
+- `artist`: For albums with multiple artists, names are concatenated with their join phrases (e.g., "Jay-Z & Kanye West", "Artist feat. Guest")
 - `release_date`: Can be YYYY, YYYY-MM, or YYYY-MM-DD format (or `null`)
 - `score`: Search relevance score (0-100)
 - `cover_art_url`: May be `null` if no cover art is available
@@ -538,6 +539,7 @@ GET /api/albums/3f49f47e-0e67-4f90-a3c0-df47c9b4b8c9
 
 **Field Details:**
 - `cached`: `true` if from local cache, `false` if freshly fetched
+- `artist`: For albums with multiple artists, names are concatenated with their join phrases (e.g., "Jay-Z & Kanye West")
 - When `cached: true`, `country` and `status` may be `null`
 - `release_date`: Can be partial (YYYY or YYYY-MM) or full (YYYY-MM-DD)
 
@@ -1239,7 +1241,7 @@ Remove an album from a week selection. Only the owner can remove albums from a w
 {
   musicbrainz_id: string  // UUID
   title: string
-  artist: string | null
+  artist: string | null  // Multiple artists concatenated with join phrases
   release_date: string | null  // YYYY, YYYY-MM, or YYYY-MM-DD
   country: string | null  // ISO country code
   score: number  // search relevance, 0-100
@@ -1253,7 +1255,7 @@ Remove an album from a week selection. Only the owner can remove albums from a w
 {
   musicbrainz_id: string  // UUID
   title: string
-  artist: string | null
+  artist: string | null  // Multiple artists concatenated with join phrases
   release_date: string | null  // YYYY, YYYY-MM, or YYYY-MM-DD
   country: string | null  // ISO country code
   status: string | null  // "Official", "Promotion", etc.
@@ -1339,7 +1341,7 @@ Remove an album from a week selection. Only the owner can remove albums from a w
   id: number  // local database ID
   musicbrainz_id: string  // UUID
   title: string
-  artist: string
+  artist: string  // Multiple artists concatenated with join phrases
   release_date: string | null  // YYYY-MM-DD
   cover_art_url: string | null
   selections: AlbumSelectionWeek[]
