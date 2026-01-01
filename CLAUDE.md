@@ -89,6 +89,7 @@ This is the frontend application for "Wrong Opinions" - a web application for tr
 **MusicBrainz Cover Art:**
 - Full URLs provided in responses
 - May return 404 if unavailable
+- Frontend displays `ALBUM_PLACEHOLDER` SVG (from `src/lib/utils/images.ts`) when cover art is null or fails to load
 
 ### Rate Limiting
 **MusicBrainz**: Hard limit of 1 request per second. API returns 429 with `Retry-After` header if exceeded. Frontend should implement retry logic or queue requests.

@@ -28,6 +28,7 @@
 						src={selection.album.cover_art_url || ALBUM_PLACEHOLDER}
 						alt={selection.album.title}
 						class="w-24 h-24 object-cover rounded"
+						onerror={(e) => { (e.currentTarget as HTMLImageElement).src = ALBUM_PLACEHOLDER; }}
 					/>
 				</div>
 				<div class="flex-1 min-w-0 flex flex-col">
