@@ -61,7 +61,29 @@ async function request<T>(
 			};
 		}
 
-		const data = await response.json();
+		// Handle server errors (often from proxy when backend is down)
+		if (response.status >= 500) {
+			return {
+				error: {
+					detail: 'Unable to connect to server. Please try again later.',
+					status: response.status
+				}
+			};
+		}
+
+		// Try to parse JSON response
+		let data;
+		try {
+			data = await response.json();
+		} catch {
+			// JSON parse failed - likely an HTML error page
+			return {
+				error: {
+					detail: 'Unable to connect to server. Please try again later.',
+					status: response.status || 0
+				}
+			};
+		}
 
 		if (!response.ok) {
 			return {
@@ -74,9 +96,10 @@ async function request<T>(
 
 		return { data };
 	} catch (err) {
+		// Network errors (backend down, no connection, etc.) should show a friendly message
 		return {
 			error: {
-				detail: err instanceof Error ? err.message : 'Network error',
+				detail: 'Unable to connect to server. Please check your connection and try again.',
 				status: 0
 			}
 		};

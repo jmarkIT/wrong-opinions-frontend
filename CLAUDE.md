@@ -181,3 +181,4 @@ Uses `prefers-color-scheme: dark` media query. Stone grays replace cream tones, 
 - **Positions**: Movies and albums each support positions 1 and 2. Cannot add to occupied position (409 error).
 - **Date Formats**: All timestamps are ISO 8601 with UTC (e.g., `2025-12-28T16:05:00Z`). Release dates are ISO date format (`2025-12-28`). MusicBrainz dates may be partial (YYYY, YYYY-MM, or YYYY-MM-DD).
 - **Error Handling**: All errors return `{ "detail": "error message" }` format. Key status codes: 401 (auth), 403 (forbidden), 404 (not found), 409 (conflict), 422 (validation), 429 (rate limit).
+- **Connection Errors**: The API client handles backend unavailability gracefully, showing "Unable to connect to server" for network errors, 5xx responses, and JSON parse failures (e.g., when Vite proxy returns HTML error pages).
