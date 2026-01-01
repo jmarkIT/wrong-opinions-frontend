@@ -87,6 +87,7 @@
 						src={album.cover_art_url ?? ALBUM_PLACEHOLDER}
 						alt={album.title}
 						class="w-20 h-20 object-cover rounded flex-shrink-0"
+						onerror={(e) => { (e.currentTarget as HTMLImageElement).src = ALBUM_PLACEHOLDER; }}
 					/>
 					<div class="flex-1 min-w-0">
 						<h2 class="text-lg font-semibold text-stone-800 dark:text-cream-100 truncate">

@@ -20,6 +20,7 @@
 			src={album.cover_art_url || ALBUM_PLACEHOLDER}
 			alt={album.title}
 			class="w-24 h-24 object-cover hover:opacity-90 transition-opacity"
+			onerror={(e) => { (e.currentTarget as HTMLImageElement).src = ALBUM_PLACEHOLDER; }}
 		/>
 	</a>
 	<div class="p-4 flex-1 min-w-0 flex flex-col">

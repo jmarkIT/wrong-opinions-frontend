@@ -69,6 +69,7 @@
 					src={album.cover_art_url || ALBUM_PLACEHOLDER}
 					alt={album.title}
 					class="w-64 h-64 object-cover rounded-md shadow-lg mx-auto md:mx-0"
+					onerror={(e) => { (e.currentTarget as HTMLImageElement).src = ALBUM_PLACEHOLDER; }}
 				/>
 			</div>
 
