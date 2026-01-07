@@ -101,7 +101,8 @@ function createAuthStore() {
 			set({ user: null, isLoading: false, isInitialized: true });
 		},
 
-		isOwner(userId: number): boolean {
+		isOwner(userId: number | null): boolean {
+			if (userId === null) return false; // Unclaimed weeks have no owner
 			const state = get({ subscribe });
 			return state.user?.id === userId;
 		}

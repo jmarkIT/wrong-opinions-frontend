@@ -10,6 +10,7 @@
 	let { week }: Props = $props();
 
 	const isOwner = $derived(auth.isOwner(week.user_id));
+	const isUnclaimed = $derived(week.user_id === null);
 	const weekLabel = $derived(formatWeekShort(week.year, week.week_number));
 </script>
 
@@ -23,11 +24,17 @@
 				{weekLabel}
 			</h3>
 			<p class="text-sm text-stone-500 dark:text-stone-400 mt-1">
-				by {week.owner?.username || 'Unknown'}
-				{#if isOwner}
-					<span class="ml-2 inline-block px-2 py-0.5 bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-400 text-xs rounded">
-						You
+				{#if isUnclaimed}
+					<span class="inline-block px-2 py-0.5 bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 text-xs rounded">
+						Unclaimed
 					</span>
+				{:else}
+					by {week.owner?.username || 'Unknown'}
+					{#if isOwner}
+						<span class="ml-2 inline-block px-2 py-0.5 bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-400 text-xs rounded">
+							You
+						</span>
+					{/if}
 				{/if}
 			</p>
 		</div>

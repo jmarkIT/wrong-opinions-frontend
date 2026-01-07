@@ -16,6 +16,9 @@
 
 	const weekId = $derived(parseInt($page.params.id ?? '0', 10));
 	const isOwner = $derived(week ? auth.isOwner(week.user_id) : false);
+	const isUnclaimed = $derived(week?.user_id === null);
+	// Users can edit if they own the week OR if the week is unclaimed (they'll claim it on first add)
+	const canEdit = $derived(isOwner || isUnclaimed);
 
 	const movie1 = $derived(week?.movies.find((m) => m.position === 1));
 	const movie2 = $derived(week?.movies.find((m) => m.position === 2));
@@ -97,9 +100,10 @@
 			weekNumber={week.week_number}
 			ownerUsername={week.owner?.username}
 			{isOwner}
+			{isUnclaimed}
 		/>
 
-		{#if !isOwner}
+		{#if !canEdit}
 			<div class="mb-6 p-3 bg-cream-100 dark:bg-stone-800 rounded-md border border-cream-200 dark:border-stone-700 text-sm text-stone-600 dark:text-stone-400">
 				This week belongs to {week.owner?.username}. You can view but not edit.
 			</div>
@@ -112,14 +116,14 @@
 					<MovieSlot
 						position={1}
 						selection={movie1}
-						{isOwner}
+						isOwner={canEdit}
 						onRemove={() => removeMovie(1)}
 						onAdd={goToMovieSearch}
 					/>
 					<MovieSlot
 						position={2}
 						selection={movie2}
-						{isOwner}
+						isOwner={canEdit}
 						onRemove={() => removeMovie(2)}
 						onAdd={goToMovieSearch}
 					/>
@@ -132,14 +136,14 @@
 					<AlbumSlot
 						position={1}
 						selection={album1}
-						{isOwner}
+						isOwner={canEdit}
 						onRemove={() => removeAlbum(1)}
 						onAdd={goToAlbumSearch}
 					/>
 					<AlbumSlot
 						position={2}
 						selection={album2}
-						{isOwner}
+						isOwner={canEdit}
 						onRemove={() => removeAlbum(2)}
 						onAdd={goToAlbumSearch}
 					/>

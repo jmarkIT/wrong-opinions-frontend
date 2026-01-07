@@ -14,6 +14,9 @@
 	let error = $state('');
 
 	const isOwner = $derived(week ? auth.isOwner(week.user_id) : false);
+	const isUnclaimed = $derived(week?.user_id === null);
+	// Users can edit if they own the week OR if the week is unclaimed (they'll claim it on first add)
+	const canEdit = $derived(isOwner || isUnclaimed);
 
 	const movie1 = $derived(week?.movies.find((m) => m.position === 1));
 	const movie2 = $derived(week?.movies.find((m) => m.position === 2));
@@ -95,6 +98,7 @@
 			weekNumber={week.week_number}
 			ownerUsername={week.owner?.username}
 			{isOwner}
+			{isUnclaimed}
 		/>
 
 		<div class="grid md:grid-cols-2 gap-6">
@@ -104,14 +108,14 @@
 					<MovieSlot
 						position={1}
 						selection={movie1}
-						{isOwner}
+						isOwner={canEdit}
 						onRemove={() => removeMovie(1)}
 						onAdd={goToMovieSearch}
 					/>
 					<MovieSlot
 						position={2}
 						selection={movie2}
-						{isOwner}
+						isOwner={canEdit}
 						onRemove={() => removeMovie(2)}
 						onAdd={goToMovieSearch}
 					/>
@@ -124,14 +128,14 @@
 					<AlbumSlot
 						position={1}
 						selection={album1}
-						{isOwner}
+						isOwner={canEdit}
 						onRemove={() => removeAlbum(1)}
 						onAdd={goToAlbumSearch}
 					/>
 					<AlbumSlot
 						position={2}
 						selection={album2}
-						{isOwner}
+						isOwner={canEdit}
 						onRemove={() => removeAlbum(2)}
 						onAdd={goToAlbumSearch}
 					/>

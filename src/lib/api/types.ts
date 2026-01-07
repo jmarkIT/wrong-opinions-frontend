@@ -130,13 +130,13 @@ export interface WeekOwner {
 
 export interface Week {
 	id: number;
-	user_id: number;
+	user_id: number | null; // null if week is unclaimed
 	year: number;
 	week_number: number;
 	notes: string | null;
 	created_at: string;
 	updated_at: string;
-	owner: WeekOwner | null;
+	owner: WeekOwner | null; // null if week is unclaimed
 }
 
 export interface WeekMovie {
