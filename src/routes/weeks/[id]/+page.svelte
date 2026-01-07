@@ -9,10 +9,13 @@
 	import WeekHeader from '$lib/components/weeks/WeekHeader.svelte';
 	import MovieSlot from '$lib/components/movies/MovieSlot.svelte';
 	import AlbumSlot from '$lib/components/albums/AlbumSlot.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 
 	let week = $state<WeekWithSelections | null>(null);
 	let isLoading = $state(true);
 	let error = $state('');
+	let showDeleteConfirm = $state(false);
+	let isDeleting = $state(false);
 
 	const weekId = $derived(parseInt($page.params.id ?? '0', 10));
 	const isOwner = $derived(week ? auth.isOwner(week.user_id) : false);
@@ -77,6 +80,22 @@
 	function goToAlbumSearch() {
 		goto('/albums');
 	}
+
+	async function deleteWeek() {
+		if (!week) return;
+
+		isDeleting = true;
+		const response = await weeksApi.delete(week.id);
+
+		if (response.error) {
+			toasts.error(response.error.detail);
+			isDeleting = false;
+			showDeleteConfirm = false;
+		} else {
+			toasts.success('Week deleted');
+			goto('/weeks');
+		}
+	}
 </script>
 
 <svelte:head>
@@ -102,6 +121,14 @@
 			{isOwner}
 			{isUnclaimed}
 		/>
+
+		{#if isOwner}
+			<div class="mb-6">
+				<Button variant="danger" onclick={() => (showDeleteConfirm = true)}>
+					Delete Week
+				</Button>
+			</div>
+		{/if}
 
 		{#if !canEdit}
 			<div class="mb-6 p-3 bg-cream-100 dark:bg-stone-800 rounded-md border border-cream-200 dark:border-stone-700 text-sm text-stone-600 dark:text-stone-400">
@@ -159,3 +186,24 @@
 		{/if}
 	{/if}
 </div>
+
+{#if showDeleteConfirm}
+	<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+		<div class="bg-white dark:bg-stone-800 rounded-lg p-6 max-w-md mx-4 shadow-xl">
+			<h2 class="text-lg font-semibold text-stone-800 dark:text-cream-100 mb-3 font-serif">
+				Delete Week?
+			</h2>
+			<p class="text-stone-600 dark:text-stone-400 mb-6">
+				All selections will be removed and another user can claim this week.
+			</p>
+			<div class="flex gap-3 justify-end">
+				<Button variant="secondary" onclick={() => (showDeleteConfirm = false)} disabled={isDeleting}>
+					Cancel
+				</Button>
+				<Button variant="danger" onclick={deleteWeek} loading={isDeleting}>
+					Delete
+				</Button>
+			</div>
+		</div>
+	</div>
+{/if}
