@@ -79,7 +79,7 @@ export function getCurrentISOWeek(): { year: number; week: number } {
 /**
  * Get the number of ISO weeks in a year (52 or 53)
  */
-function getWeeksInYear(year: number): number {
+export function getWeeksInYear(year: number): number {
 	const dec31 = new Date(year, 11, 31);
 	const jan1 = new Date(year, 0, 1);
 
