@@ -66,7 +66,7 @@ This is the frontend application for "Wrong Opinions" - a web application for tr
 
 **Key Domain Concepts:**
 - **ISO Week System**: Weeks are identified by year + week_number (1-53). Week 1 is the first week with at least 4 days in the new year. Weeks start on Monday.
-- **Week Ownership**: Only one week can exist per year+week_number globally (across all users). The user who creates the week owns it and can modify it. All authenticated users can view all weeks.
+- **Week Ownership**: Only one week can exist per year+week_number globally (across all users). Weeks can be **unclaimed** (`user_id: null`) or **owned** by a user. When a user adds a selection to an unclaimed week, they automatically claim ownership. Owners can delete their weeks to allow another user to claim them. All authenticated users can view all weeks.
 - **Selections**: Each week can have 0-2 movies (position 1 and 2) and 0-2 albums (position 1 and 2).
 - **Authentication**: JWT-based authentication required for most endpoints. Token is obtained via `/api/auth/login` and sent as `Authorization: Bearer <token>` header.
 
@@ -104,8 +104,9 @@ The backend caches external API responses. When `cached: true`, some fields may 
 ### Display Current Week
 ```javascript
 // GET /api/weeks/current returns the current ISO week
-// Auto-creates if doesn't exist
+// Auto-creates as unclaimed if doesn't exist
 // Returns week with movies[] and albums[] arrays
+// If unclaimed (user_id: null), any user can add selections to claim it
 ```
 
 ### Add Movie to Week
@@ -178,7 +179,7 @@ Uses `prefers-color-scheme: dark` media query. Stone grays replace cream tones, 
 ## Important Constraints
 
 - **Week Uniqueness**: Only one week per year+week_number globally. Attempting to create a duplicate returns 409.
-- **Ownership**: Only the week owner (user_id) can add/remove movies/albums, update notes, or delete the week.
+- **Ownership**: Only the week owner (`user_id`) can add/remove movies/albums, update notes, or delete the week. Exception: **unclaimed weeks** (`user_id: null`) can have selections added by any authenticated user, which claims the week for them.
 - **Positions**: Movies and albums each support positions 1 and 2. Cannot add to occupied position (409 error).
 - **Date Formats**: All timestamps are ISO 8601 with UTC (e.g., `2025-12-28T16:05:00Z`). Release dates are ISO date format (`2025-12-28`). MusicBrainz dates may be partial (YYYY, YYYY-MM, or YYYY-MM-DD).
 - **Error Handling**: All errors return `{ "detail": "error message" }` format. Key status codes: 401 (auth), 403 (forbidden), 404 (not found), 409 (conflict), 422 (validation), 429 (rate limit).
