@@ -147,13 +147,15 @@
 						onRemove={() => removeMovie(1)}
 						onAdd={goToMovieSearch}
 					/>
-					<MovieSlot
-						position={2}
-						selection={movie2}
-						isOwner={canEdit}
-						onRemove={() => removeMovie(2)}
-						onAdd={goToMovieSearch}
-					/>
+					{#if movie2}
+						<MovieSlot
+							position={2}
+							selection={movie2}
+							isOwner={canEdit}
+							onRemove={() => removeMovie(2)}
+							onAdd={goToMovieSearch}
+						/>
+					{/if}
 				</div>
 			</section>
 
@@ -167,13 +169,15 @@
 						onRemove={() => removeAlbum(1)}
 						onAdd={goToAlbumSearch}
 					/>
-					<AlbumSlot
-						position={2}
-						selection={album2}
-						isOwner={canEdit}
-						onRemove={() => removeAlbum(2)}
-						onAdd={goToAlbumSearch}
-					/>
+					{#if album2}
+						<AlbumSlot
+							position={2}
+							selection={album2}
+							isOwner={canEdit}
+							onRemove={() => removeAlbum(2)}
+							onAdd={goToAlbumSearch}
+						/>
+					{/if}
 				</div>
 			</section>
 		</div>

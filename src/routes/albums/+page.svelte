@@ -18,8 +18,6 @@
 	let currentWeek = $state<WeekWithSelections | null>(null);
 	let addingAlbumId = $state<string | null>(null);
 
-	// Position selection modal
-	let showPositionModal = $state(false);
 	let selectedAlbum = $state<AlbumSearchResult | null>(null);
 
 	const availablePositions = $derived(() => {
@@ -86,20 +84,14 @@
 			return;
 		}
 
-		if (positions.length === 1) {
-			// Only one position available, add directly
-			addAlbumToWeek(album, positions[0]);
-		} else {
-			// Show position selection modal
-			showPositionModal = true;
-		}
+		// Always add to first available position
+		addAlbumToWeek(album, positions[0]);
 	}
 
 	async function addAlbumToWeek(album: AlbumSearchResult, position: 1 | 2) {
 		if (!currentWeek) return;
 
 		addingAlbumId = album.musicbrainz_id;
-		showPositionModal = false;
 
 		const response = await weeksApi.addAlbum(currentWeek.id, {
 			musicbrainz_id: album.musicbrainz_id,
@@ -185,36 +177,3 @@
 	{/if}
 </div>
 
-<!-- Position Selection Modal -->
-{#if showPositionModal && selectedAlbum}
-	<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" role="dialog">
-		<div class="bg-white dark:bg-stone-800 rounded-md border border-cream-200 dark:border-stone-700 shadow-lg p-6 max-w-sm w-full mx-4">
-			<h2 class="text-lg font-semibold text-stone-800 dark:text-cream-100 font-serif mb-4">
-				Select Position
-			</h2>
-			<p class="text-stone-600 dark:text-stone-400 mb-4">
-				Add "{selectedAlbum.title}" to which position?
-			</p>
-			<div class="flex gap-3">
-				{#each availablePositions() as position}
-					<Button
-						onclick={() => addAlbumToWeek(selectedAlbum!, position)}
-						class="flex-1"
-					>
-						Position {position}
-					</Button>
-				{/each}
-			</div>
-			<Button
-				variant="secondary"
-				onclick={() => {
-					showPositionModal = false;
-					selectedAlbum = null;
-				}}
-				class="w-full mt-3"
-			>
-				Cancel
-			</Button>
-		</div>
-	</div>
-{/if}
