@@ -26,6 +26,15 @@
 			navigateToAlbum();
 		}
 	}
+
+	function handleRemove(): void {
+		if (selection && onRemove) {
+			const confirmed = confirm(`Remove "${selection.album.title}" from this week?`);
+			if (confirmed) {
+				onRemove();
+			}
+		}
+	}
 </script>
 
 <div class="bg-white dark:bg-stone-800 rounded-md border border-cream-200 dark:border-stone-700 overflow-hidden">
@@ -65,7 +74,7 @@
 						</p>
 					</div>
 					{#if isOwner && onRemove}
-						<Button variant="danger" onclick={onRemove} class="mt-2 text-sm px-3 py-1.5 self-start">
+						<Button variant="danger" onclick={handleRemove} class="mt-2 text-sm px-3 py-1.5 self-start">
 							Remove
 						</Button>
 					{/if}
