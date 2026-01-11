@@ -21,6 +21,12 @@
 
 	let selectedAlbum = $state<AlbumSearchResult | null>(null);
 
+	// Manual lookup state
+	let manualInput = $state('');
+	let isLookingUp = $state(false);
+	let lookupResult = $state<AlbumSearchResult | null>(null);
+	let lookupError = $state<string | null>(null);
+
 	const availablePositions = $derived(() => {
 		if (!selectedWeek) return [];
 		const usedPositions = selectedWeek.albums.map((a) => a.position);
@@ -104,6 +110,11 @@
 			if (weekRes.data) {
 				selectedWeek = weekRes.data;
 			}
+			// Clear lookup result if this was a manually looked-up album
+			if (lookupResult?.musicbrainz_id === album.musicbrainz_id) {
+				lookupResult = null;
+				manualInput = '';
+			}
 		}
 
 		addingAlbumId = null;
@@ -113,6 +124,73 @@
 	async function loadMore() {
 		offset += limit;
 		await search(false);
+	}
+
+	function parseMusicBrainzId(input: string): string | null {
+		const trimmed = input.trim();
+
+		// UUID regex pattern
+		const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+		// If it's already a UUID, return it
+		if (uuidPattern.test(trimmed)) {
+			return trimmed.toLowerCase();
+		}
+
+		// Try to extract UUID from MusicBrainz URL
+		// Handles: https://musicbrainz.org/release/UUID and variations
+		const urlMatch = trimmed.match(
+			/musicbrainz\.org\/release\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i
+		);
+		if (urlMatch) {
+			return urlMatch[1].toLowerCase();
+		}
+
+		return null;
+	}
+
+	function handleLookupSubmit(e: Event) {
+		e.preventDefault();
+		lookupAlbum();
+	}
+
+	async function lookupAlbum() {
+		if (isLookingUp) return;
+
+		const id = parseMusicBrainzId(manualInput);
+		if (!id) {
+			lookupError = 'Please enter a valid MusicBrainz release ID or URL';
+			return;
+		}
+
+		isLookingUp = true;
+		lookupError = null;
+		lookupResult = null;
+
+		const response = await albumsApi.details(id);
+
+		if (response.error) {
+			if (response.error.status === 404) {
+				lookupError = 'Album not found. Check the ID and try again.';
+			} else if (response.error.status === 429) {
+				lookupError = 'Rate limited. Please wait a moment and try again.';
+			} else {
+				lookupError = response.error.detail;
+			}
+		} else {
+			// Convert AlbumDetails to AlbumSearchResult format
+			lookupResult = {
+				musicbrainz_id: response.data!.musicbrainz_id,
+				title: response.data!.title,
+				artist: response.data!.artist,
+				release_date: response.data!.release_date,
+				country: response.data!.country,
+				score: 100,
+				cover_art_url: response.data!.cover_art_url
+			};
+		}
+
+		isLookingUp = false;
 	}
 </script>
 
@@ -146,6 +224,35 @@
 	<p class="text-sm text-stone-500 dark:text-stone-400 mb-4">
 		Note: Album search uses MusicBrainz which has rate limiting. Results may take a moment.
 	</p>
+
+	<div class="border-t border-cream-200 dark:border-stone-700 pt-6 mt-2 mb-6">
+		<p class="text-sm text-stone-600 dark:text-stone-400 mb-3">
+			Or paste a MusicBrainz release URL or ID:
+		</p>
+		<form onsubmit={handleLookupSubmit} class="flex gap-3 mb-4">
+			<Input
+				name="manualInput"
+				placeholder="e.g., e38b19cd-6599-4d41-bc4d-eb50b9b3749d"
+				bind:value={manualInput}
+				class="flex-1"
+			/>
+			<Button type="submit" variant="secondary" loading={isLookingUp}>
+				Look Up
+			</Button>
+		</form>
+
+		{#if lookupError}
+			<p class="text-sm text-rose-600 dark:text-rose-400 mb-4">{lookupError}</p>
+		{/if}
+
+		{#if lookupResult}
+			<AlbumCard
+				album={lookupResult}
+				onSelect={handleAlbumSelect}
+				isAdding={addingAlbumId === lookupResult.musicbrainz_id}
+			/>
+		{/if}
+	</div>
 
 	{#if isSearching && offset === 0}
 		<div class="flex justify-center py-12">

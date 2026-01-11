@@ -127,11 +127,14 @@ The backend caches external API responses. When `cached: true`, some fields may 
 // 1. WeekPicker loads editable weeks (owned by user or unclaimed)
 // 2. User selects target week or creates new week inline
 // 3. Search: GET /api/albums/search?query=dark+side+of+the+moon
+//    OR lookup by ID: GET /api/albums/{musicbrainz_id}
 // 4. Determine available position (1 or 2) for selected week
 // 5. Add: POST /api/weeks/{week_id}/albums
 //    Body: { musicbrainz_id: "uuid", position: 1 }
 // 6. Handle 429 rate limit (retry after delay)
 ```
+
+**Manual Album Lookup:** The album search page also accepts direct MusicBrainz release IDs or URLs (e.g., `e38b19cd-6599-4d41-bc4d-eb50b9b3749d` or `https://musicbrainz.org/release/e38b19cd-6599-4d41-bc4d-eb50b9b3749d`). This uses the `/api/albums/{id}` details endpoint directly.
 
 **WeekPicker Component:** Used on movie/album search and detail pages. Allows users to select any editable week (past or future up to 1 week ahead) or create new weeks inline. Shows slot availability for the selected week.
 
