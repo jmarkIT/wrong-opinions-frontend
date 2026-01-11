@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { albumsApi } from '$lib/api/albums';
-	import type { AlbumDetails, AlbumCredits } from '$lib/api/types';
+	import type { AlbumDetails, AlbumCredits, Artist } from '$lib/api/types';
 	import { ALBUM_PLACEHOLDER } from '$lib/utils/images';
 	import { formatReleaseDate } from '$lib/utils/dates';
 
@@ -10,6 +10,15 @@
 	let credits = $state<AlbumCredits | null>(null);
 	let isLoading = $state(true);
 	let error = $state('');
+
+	function formatArtistCredits(artists: Artist[] | undefined): string {
+		if (!artists || artists.length === 0) return '';
+		return artists
+			.slice()
+			.sort((a, b) => a.order - b.order)
+			.map((artist, i, arr) => artist.name + (artist.join_phrase || (i < arr.length - 1 ? ', ' : '')))
+			.join('');
+	}
 
 	const musicbrainzId = $derived($page.params.musicbrainzId ?? '');
 
@@ -80,7 +89,7 @@
 				</h1>
 
 				<p class="text-xl text-stone-600 dark:text-stone-400 mt-2">
-					{album.artist || 'Unknown Artist'}
+					{formatArtistCredits(credits?.artists) || album.artist || 'Unknown Artist'}
 				</p>
 
 				<div class="flex flex-wrap gap-4 mt-4 text-sm text-stone-500 dark:text-stone-400">

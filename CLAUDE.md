@@ -99,6 +99,8 @@ This is the frontend application for "Wrong Opinions" - a web application for tr
 ### Data Caching
 The backend caches external API responses. When `cached: true`, some fields may be `null` because only a subset is stored in cache.
 
+**Album Artist Names:** The `album.artist` field in cached data may be incomplete. For authoritative artist information, use the `/albums/{id}/credits` endpoint which returns the full artist credits array. The album details page prioritizes credits data over the cached `album.artist` field.
+
 ## Common Frontend Workflows
 
 ### Display Current Week
