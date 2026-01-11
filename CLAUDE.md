@@ -34,7 +34,7 @@ src/
 │   │   ├── layout/    # Header
 │   │   ├── movies/    # MovieCard, MovieSlot
 │   │   ├── albums/    # AlbumCard, AlbumSlot
-│   │   └── weeks/     # WeekCard, WeekHeader
+│   │   └── weeks/     # WeekCard, WeekHeader, WeekPicker
 │   └── utils/         # Utilities
 │       ├── dates.ts   # ISO week formatting
 │       └── images.ts  # TMDB image URL helpers
@@ -113,23 +113,27 @@ The backend caches external API responses. When `cached: true`, some fields may 
 
 ### Add Movie to Week
 ```javascript
-// 1. Search: GET /api/movies/search?query=inception
-// 2. Get current week: GET /api/weeks/current
-// 3. Determine available position (1 or 2)
-// 4. Add: POST /api/weeks/{week_id}/movies
+// 1. WeekPicker loads editable weeks (owned by user or unclaimed)
+// 2. User selects target week or creates new week inline
+// 3. Search: GET /api/movies/search?query=inception
+// 4. Determine available position (1 or 2) for selected week
+// 5. Add: POST /api/weeks/{week_id}/movies
 //    Body: { tmdb_id: 27205, position: 1 }
-// 5. Handle 409 if position occupied
+// 6. Handle 409 if position occupied
 ```
 
 ### Add Album to Week
 ```javascript
-// 1. Search: GET /api/albums/search?query=dark+side+of+the+moon
-// 2. Get current week: GET /api/weeks/current
-// 3. Determine available position (1 or 2)
-// 4. Add: POST /api/weeks/{week_id}/albums
+// 1. WeekPicker loads editable weeks (owned by user or unclaimed)
+// 2. User selects target week or creates new week inline
+// 3. Search: GET /api/albums/search?query=dark+side+of+the+moon
+// 4. Determine available position (1 or 2) for selected week
+// 5. Add: POST /api/weeks/{week_id}/albums
 //    Body: { musicbrainz_id: "uuid", position: 1 }
-// 5. Handle 429 rate limit (retry after delay)
+// 6. Handle 429 rate limit (retry after delay)
 ```
+
+**WeekPicker Component:** Used on movie/album search and detail pages. Allows users to select any editable week (past or future up to 1 week ahead) or create new weeks inline. Shows slot availability for the selected week.
 
 ### Browse Week History
 ```javascript
@@ -173,7 +177,7 @@ The backend caches external API responses. When `cached: true`, some fields may 
 - **Hover states**: Border color change to `amber-400` for cards, background darkening for buttons
 - **Loading spinners**: `border-amber-600`
 - **Error alerts**: `bg-rose-50 border-rose-200 text-rose-700`
-- **Slot cards (MovieSlot/AlbumSlot)**: Fixed `h-36` content height for visual consistency. Movie posters fill the full height; album covers (square) are vertically centered within the container.
+- **Slot cards (MovieSlot/AlbumSlot)**: Fixed `h-36` content height for visual consistency. Movie posters fill the full height; album covers (square) are vertically centered within the container. Remove button shows confirmation prompt before deletion.
 
 ### Dark Mode
 Uses `prefers-color-scheme: dark` media query. Stone grays replace cream tones, text uses `cream-100`.
