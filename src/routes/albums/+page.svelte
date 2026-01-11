@@ -6,6 +6,7 @@
 	import Input from '$lib/components/ui/Input.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import AlbumCard from '$lib/components/albums/AlbumCard.svelte';
+	import WeekPicker from '$lib/components/weeks/WeekPicker.svelte';
 
 	let query = $state('');
 	let results = $state<AlbumSearchResult[]>([]);
@@ -15,24 +16,21 @@
 	let totalCount = $state(0);
 	const limit = 25;
 
-	let currentWeek = $state<WeekWithSelections | null>(null);
+	let selectedWeek = $state<WeekWithSelections | null>(null);
 	let addingAlbumId = $state<string | null>(null);
 
 	let selectedAlbum = $state<AlbumSearchResult | null>(null);
 
 	const availablePositions = $derived(() => {
-		if (!currentWeek) return [];
-		const usedPositions = currentWeek.albums.map((a) => a.position);
+		if (!selectedWeek) return [];
+		const usedPositions = selectedWeek.albums.map((a) => a.position);
 		return ([1, 2] as const).filter((p) => !usedPositions.includes(p));
 	});
 
 	const hasMore = $derived(offset + limit < totalCount);
 
-	async function loadCurrentWeek() {
-		const response = await weeksApi.current();
-		if (response.data) {
-			currentWeek = response.data;
-		}
+	function handleWeekChange(week: WeekWithSelections) {
+		selectedWeek = week;
 	}
 
 	async function search(resetOffset = true) {
@@ -63,11 +61,6 @@
 		}
 
 		isSearching = false;
-
-		// Also load current week if not loaded
-		if (!currentWeek) {
-			await loadCurrentWeek();
-		}
 	}
 
 	function handleSearchSubmit(e: Event) {
@@ -89,11 +82,11 @@
 	}
 
 	async function addAlbumToWeek(album: AlbumSearchResult, position: 1 | 2) {
-		if (!currentWeek) return;
+		if (!selectedWeek) return;
 
 		addingAlbumId = album.musicbrainz_id;
 
-		const response = await weeksApi.addAlbum(currentWeek.id, {
+		const response = await weeksApi.addAlbum(selectedWeek.id, {
 			musicbrainz_id: album.musicbrainz_id,
 			position
 		});
@@ -106,7 +99,11 @@
 			}
 		} else {
 			toasts.success(`"${album.title}" added to position ${position}`);
-			await loadCurrentWeek();
+			// Refresh the selected week to update available positions
+			const weekRes = await weeksApi.get(selectedWeek.id);
+			if (weekRes.data) {
+				selectedWeek = weekRes.data;
+			}
 		}
 
 		addingAlbumId = null;
@@ -125,6 +122,14 @@
 
 <div class="max-w-4xl mx-auto px-4 py-8">
 	<h1 class="text-2xl font-bold text-stone-800 dark:text-cream-100 font-serif mb-6">Add Album</h1>
+
+	<div class="mb-6">
+		<WeekPicker
+			selectedWeek={selectedWeek}
+			onWeekChange={handleWeekChange}
+			mediaType="albums"
+		/>
+	</div>
 
 	<form onsubmit={handleSearchSubmit} class="flex gap-3 mb-6">
 		<Input

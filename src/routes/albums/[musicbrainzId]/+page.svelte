@@ -2,13 +2,19 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { albumsApi } from '$lib/api/albums';
-	import type { AlbumDetails, AlbumCredits, Artist } from '$lib/api/types';
+	import { weeksApi } from '$lib/api/weeks';
+	import type { AlbumDetails, AlbumCredits, Artist, WeekWithSelections } from '$lib/api/types';
 	import { ALBUM_PLACEHOLDER } from '$lib/utils/images';
 	import { formatReleaseDate } from '$lib/utils/dates';
+	import { toasts } from '$lib/stores/toast';
+	import Button from '$lib/components/ui/Button.svelte';
+	import WeekPicker from '$lib/components/weeks/WeekPicker.svelte';
 
 	let album = $state<AlbumDetails | null>(null);
 	let credits = $state<AlbumCredits | null>(null);
+	let selectedWeek = $state<WeekWithSelections | null>(null);
 	let isLoading = $state(true);
+	let isAdding = $state(false);
 	let error = $state('');
 
 	function formatArtistCredits(artists: Artist[] | undefined): string {
@@ -28,6 +34,16 @@
 			? [...new Map(credits.artists.map((a) => [a.musicbrainz_id, a])).values()]
 			: []
 	);
+
+	const availablePositions = $derived(() => {
+		if (!selectedWeek) return [];
+		const usedPositions = selectedWeek.albums.map((a) => a.position);
+		return ([1, 2] as const).filter((p) => !usedPositions.includes(p));
+	});
+
+	function handleWeekChange(week: WeekWithSelections) {
+		selectedWeek = week;
+	}
 
 	onMount(async () => {
 		await loadAlbum();
@@ -59,6 +75,40 @@
 		}
 
 		isLoading = false;
+	}
+
+	async function addToWeek() {
+		if (!album || !selectedWeek) return;
+
+		const positions = availablePositions();
+		if (positions.length === 0) {
+			toasts.error('Both album slots are full. Remove an album first.');
+			return;
+		}
+
+		isAdding = true;
+
+		const response = await weeksApi.addAlbum(selectedWeek.id, {
+			musicbrainz_id: album.musicbrainz_id,
+			position: positions[0]
+		});
+
+		if (response.error) {
+			if (response.error.status === 429) {
+				toasts.error('Rate limited. Please wait a moment and try again.');
+			} else {
+				toasts.error(response.error.detail);
+			}
+		} else {
+			toasts.success(`"${album.title}" added to position ${positions[0]}`);
+			// Refresh week data to update button state
+			const weekRes = await weeksApi.get(selectedWeek.id);
+			if (weekRes.data) {
+				selectedWeek = weekRes.data;
+			}
+		}
+
+		isAdding = false;
 	}
 </script>
 
@@ -119,6 +169,25 @@
 				>
 					View on MusicBrainz →
 				</a>
+
+				<div class="mt-6">
+					<WeekPicker
+						selectedWeek={selectedWeek}
+						onWeekChange={handleWeekChange}
+						mediaType="albums"
+					/>
+
+					{#if selectedWeek}
+						{@const positions = availablePositions()}
+						{#if positions.length > 0}
+							<div class="mt-4">
+								<Button onclick={addToWeek} loading={isAdding}>
+									Add to Week
+								</Button>
+							</div>
+						{/if}
+					{/if}
+				</div>
 			</div>
 		</div>
 

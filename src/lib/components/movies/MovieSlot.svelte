@@ -36,10 +36,6 @@
 
 <div class="bg-white dark:bg-stone-800 rounded-md border border-cream-200 dark:border-stone-700 overflow-hidden">
 	<div class="p-4">
-		<h3 class="text-sm font-medium text-stone-500 dark:text-stone-400 mb-3">
-			Movie {position}
-		</h3>
-
 		{#if selection}
 			<div class="flex gap-4 h-36">
 				<div

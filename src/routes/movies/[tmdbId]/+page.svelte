@@ -2,17 +2,32 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { moviesApi } from '$lib/api/movies';
+	import { weeksApi } from '$lib/api/weeks';
 	import { toasts } from '$lib/stores/toast';
-	import type { MovieDetails, MovieCredits } from '$lib/api/types';
+	import type { MovieDetails, MovieCredits, WeekWithSelections } from '$lib/api/types';
 	import { MOVIE_PLACEHOLDER, getBackdropUrl } from '$lib/utils/images';
 	import { formatReleaseDate } from '$lib/utils/dates';
+	import Button from '$lib/components/ui/Button.svelte';
+	import WeekPicker from '$lib/components/weeks/WeekPicker.svelte';
 
 	let movie = $state<MovieDetails | null>(null);
 	let credits = $state<MovieCredits | null>(null);
+	let selectedWeek = $state<WeekWithSelections | null>(null);
 	let isLoading = $state(true);
+	let isAdding = $state(false);
 	let error = $state('');
 
 	const tmdbId = $derived(parseInt($page.params.tmdbId ?? '0', 10));
+
+	const availablePositions = $derived(() => {
+		if (!selectedWeek) return [];
+		const usedPositions = selectedWeek.movies.map((m) => m.position);
+		return ([1, 2] as const).filter((p) => !usedPositions.includes(p));
+	});
+
+	function handleWeekChange(week: WeekWithSelections) {
+		selectedWeek = week;
+	}
 
 	onMount(async () => {
 		await loadMovie();
@@ -38,6 +53,36 @@
 		}
 
 		isLoading = false;
+	}
+
+	async function addToWeek() {
+		if (!movie || !selectedWeek) return;
+
+		const positions = availablePositions();
+		if (positions.length === 0) {
+			toasts.error('Both movie slots are full. Remove a movie first.');
+			return;
+		}
+
+		isAdding = true;
+
+		const response = await weeksApi.addMovie(selectedWeek.id, {
+			tmdb_id: movie.tmdb_id,
+			position: positions[0]
+		});
+
+		if (response.error) {
+			toasts.error(response.error.detail);
+		} else {
+			toasts.success(`"${movie.title}" added to position ${positions[0]}`);
+			// Refresh week data to update button state
+			const weekRes = await weeksApi.get(selectedWeek.id);
+			if (weekRes.data) {
+				selectedWeek = weekRes.data;
+			}
+		}
+
+		isAdding = false;
 	}
 
 	const backdropUrl = $derived(movie?.backdrop_url ? getBackdropUrl(movie.backdrop_url) : null);
@@ -126,6 +171,25 @@
 						View on IMDb →
 					</a>
 				{/if}
+
+				<div class="mt-6">
+					<WeekPicker
+						selectedWeek={selectedWeek}
+						onWeekChange={handleWeekChange}
+						mediaType="movies"
+					/>
+
+					{#if selectedWeek}
+						{@const positions = availablePositions()}
+						{#if positions.length > 0}
+							<div class="mt-4">
+								<Button onclick={addToWeek} loading={isAdding}>
+									Add to Week
+								</Button>
+							</div>
+						{/if}
+					{/if}
+				</div>
 			</div>
 		</div>
 

@@ -7,6 +7,7 @@
 	import Input from '$lib/components/ui/Input.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import MovieCard from '$lib/components/movies/MovieCard.svelte';
+	import WeekPicker from '$lib/components/weeks/WeekPicker.svelte';
 
 	let query = $state('');
 	let results = $state<MovieSearchResult[]>([]);
@@ -15,22 +16,19 @@
 	let currentPage = $state(1);
 	let totalPages = $state(0);
 
-	let currentWeek = $state<WeekWithSelections | null>(null);
+	let selectedWeek = $state<WeekWithSelections | null>(null);
 	let addingMovieId = $state<number | null>(null);
 
 	let selectedMovie = $state<MovieSearchResult | null>(null);
 
 	const availablePositions = $derived(() => {
-		if (!currentWeek) return [];
-		const usedPositions = currentWeek.movies.map((m) => m.position);
+		if (!selectedWeek) return [];
+		const usedPositions = selectedWeek.movies.map((m) => m.position);
 		return ([1, 2] as const).filter((p) => !usedPositions.includes(p));
 	});
 
-	async function loadCurrentWeek() {
-		const response = await weeksApi.current();
-		if (response.data) {
-			currentWeek = response.data;
-		}
+	function handleWeekChange(week: WeekWithSelections) {
+		selectedWeek = week;
 	}
 
 	async function search() {
@@ -49,11 +47,6 @@
 		}
 
 		isSearching = false;
-
-		// Also load current week if not loaded
-		if (!currentWeek) {
-			await loadCurrentWeek();
-		}
 	}
 
 	function handleSearchSubmit(e: Event) {
@@ -76,11 +69,11 @@
 	}
 
 	async function addMovieToWeek(movie: MovieSearchResult, position: 1 | 2) {
-		if (!currentWeek) return;
+		if (!selectedWeek) return;
 
 		addingMovieId = movie.tmdb_id;
 
-		const response = await weeksApi.addMovie(currentWeek.id, {
+		const response = await weeksApi.addMovie(selectedWeek.id, {
 			tmdb_id: movie.tmdb_id,
 			position
 		});
@@ -89,7 +82,11 @@
 			toasts.error(response.error.detail);
 		} else {
 			toasts.success(`"${movie.title}" added to position ${position}`);
-			await loadCurrentWeek();
+			// Refresh the selected week to update available positions
+			const weekRes = await weeksApi.get(selectedWeek.id);
+			if (weekRes.data) {
+				selectedWeek = weekRes.data;
+			}
 		}
 
 		addingMovieId = null;
@@ -117,6 +114,14 @@
 
 <div class="max-w-4xl mx-auto px-4 py-8">
 	<h1 class="text-2xl font-bold text-stone-800 dark:text-cream-100 font-serif mb-6">Add Movie</h1>
+
+	<div class="mb-6">
+		<WeekPicker
+			selectedWeek={selectedWeek}
+			onWeekChange={handleWeekChange}
+			mediaType="movies"
+		/>
+	</div>
 
 	<form onsubmit={handleSearchSubmit} class="flex gap-3 mb-6">
 		<Input
