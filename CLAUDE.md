@@ -31,7 +31,7 @@ src/
 │   │   └── toast.ts   # Toast notifications
 │   ├── components/    # Reusable components
 │   │   ├── ui/        # Button, Input, Toast
-│   │   ├── layout/    # Header
+│   │   ├── layout/    # Header (dropdown nav: Weeks, Media, Search)
 │   │   ├── movies/    # MovieCard, MovieSlot
 │   │   ├── albums/    # AlbumCard, AlbumSlot
 │   │   └── weeks/     # WeekCard, WeekHeader, WeekPicker
