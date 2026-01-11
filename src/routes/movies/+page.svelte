@@ -21,6 +21,12 @@
 
 	let selectedMovie = $state<MovieSearchResult | null>(null);
 
+	// Manual lookup state
+	let manualInput = $state('');
+	let isLookingUp = $state(false);
+	let lookupResult = $state<MovieSearchResult | null>(null);
+	let lookupError = $state<string | null>(null);
+
 	const availablePositions = $derived(() => {
 		if (!selectedWeek) return [];
 		const usedPositions = selectedWeek.movies.map((m) => m.position);
@@ -87,6 +93,11 @@
 			if (weekRes.data) {
 				selectedWeek = weekRes.data;
 			}
+			// Clear lookup result if this was a manually looked-up movie
+			if (lookupResult?.tmdb_id === movie.tmdb_id) {
+				lookupResult = null;
+				manualInput = '';
+			}
 		}
 
 		addingMovieId = null;
@@ -105,6 +116,67 @@
 			currentPage--;
 			await search();
 		}
+	}
+
+	function parseTmdbId(input: string): number | null {
+		const trimmed = input.trim();
+
+		// If it's already a number, return it
+		const directNum = parseInt(trimmed, 10);
+		if (!isNaN(directNum) && String(directNum) === trimmed) {
+			return directNum;
+		}
+
+		// Try to extract ID from TMDB URL
+		// Handles: https://www.themoviedb.org/movie/83533-avatar-fire-and-ash
+		const urlMatch = trimmed.match(/themoviedb\.org\/movie\/(\d+)/i);
+		if (urlMatch) {
+			return parseInt(urlMatch[1], 10);
+		}
+
+		return null;
+	}
+
+	function handleLookupSubmit(e: Event) {
+		e.preventDefault();
+		lookupMovie();
+	}
+
+	async function lookupMovie() {
+		if (isLookingUp) return;
+
+		const id = parseTmdbId(manualInput);
+		if (!id) {
+			lookupError = 'Please enter a valid TMDB movie ID or URL';
+			return;
+		}
+
+		isLookingUp = true;
+		lookupError = null;
+		lookupResult = null;
+
+		const response = await moviesApi.details(id);
+
+		if (response.error) {
+			if (response.error.status === 404) {
+				lookupError = 'Movie not found. Check the ID and try again.';
+			} else {
+				lookupError = response.error.detail;
+			}
+		} else {
+			// Convert MovieDetails to MovieSearchResult format
+			lookupResult = {
+				tmdb_id: response.data!.tmdb_id,
+				title: response.data!.title,
+				original_title: response.data!.original_title,
+				release_date: response.data!.release_date,
+				poster_url: response.data!.poster_url,
+				overview: response.data!.overview,
+				vote_average: response.data!.vote_average
+			};
+		}
+
+		isLookingUp = false;
 	}
 </script>
 
@@ -134,6 +206,35 @@
 			Search
 		</Button>
 	</form>
+
+	<div class="border-t border-cream-200 dark:border-stone-700 pt-6 mt-2 mb-6">
+		<p class="text-sm text-stone-600 dark:text-stone-400 mb-3">
+			Or paste a TMDB movie URL or ID:
+		</p>
+		<form onsubmit={handleLookupSubmit} class="flex gap-3 mb-4">
+			<Input
+				name="manualInput"
+				placeholder="e.g., 83533 or themoviedb.org/movie/83533"
+				bind:value={manualInput}
+				class="flex-1"
+			/>
+			<Button type="submit" variant="secondary" loading={isLookingUp}>
+				Look Up
+			</Button>
+		</form>
+
+		{#if lookupError}
+			<p class="text-sm text-rose-600 dark:text-rose-400 mb-4">{lookupError}</p>
+		{/if}
+
+		{#if lookupResult}
+			<MovieCard
+				movie={lookupResult}
+				onSelect={handleMovieSelect}
+				isAdding={addingMovieId === lookupResult.tmdb_id}
+			/>
+		{/if}
+	</div>
 
 	{#if isSearching}
 		<div class="flex justify-center py-12">

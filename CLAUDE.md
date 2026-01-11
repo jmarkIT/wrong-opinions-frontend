@@ -116,11 +116,14 @@ The backend caches external API responses. When `cached: true`, some fields may 
 // 1. WeekPicker loads editable weeks (owned by user or unclaimed)
 // 2. User selects target week or creates new week inline
 // 3. Search: GET /api/movies/search?query=inception
+//    OR lookup by ID: GET /api/movies/{tmdb_id}
 // 4. Determine available position (1 or 2) for selected week
 // 5. Add: POST /api/weeks/{week_id}/movies
 //    Body: { tmdb_id: 27205, position: 1 }
 // 6. Handle 409 if position occupied
 ```
+
+**Manual Movie Lookup:** The movie search page also accepts direct TMDB IDs or URLs (e.g., `83533` or `https://www.themoviedb.org/movie/83533-avatar-fire-and-ash`). This uses the `/api/movies/{id}` details endpoint directly.
 
 ### Add Album to Week
 ```javascript
