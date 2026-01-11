@@ -89,7 +89,7 @@
 				</h1>
 
 				<p class="text-xl text-stone-600 dark:text-stone-400 mt-2">
-					{formatArtistCredits(credits?.artists) || album.artist || 'Unknown Artist'}
+					{album.artist || formatArtistCredits(credits?.artists) || 'Unknown Artist'}
 				</p>
 
 				<div class="flex flex-wrap gap-4 mt-4 text-sm text-stone-500 dark:text-stone-400">
@@ -123,8 +123,13 @@
 					{#each credits.artists as artist}
 						<div class="bg-white dark:bg-stone-800 rounded-md border border-cream-200 dark:border-stone-700 p-4">
 							<p class="font-medium text-stone-800 dark:text-cream-100">
-								{artist.name}
+								{artist.sort_name || artist.name}
 							</p>
+							{#if artist.sort_name && artist.sort_name !== artist.name}
+								<p class="text-sm text-stone-500 dark:text-stone-400">
+									{artist.name}
+								</p>
+							{/if}
 							<div class="flex flex-wrap gap-3 mt-1 text-sm text-stone-500 dark:text-stone-400">
 								{#if artist.artist_type}
 									<span>{artist.artist_type}</span>
