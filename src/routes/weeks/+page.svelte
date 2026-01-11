@@ -26,8 +26,17 @@
 	let isCreating = $state(false);
 	let createError = $state('');
 	const { year: currentISOYear, week: currentISOWeek } = getCurrentISOWeek();
-	let selectedCreateYear = $state(currentISOYear);
-	let selectedCreateWeek = $state(currentISOWeek);
+	const weeksInCurrentYear = getWeeksInYear(currentISOYear);
+
+	// Max allowed week is next week (one week into future)
+	const maxAllowedWeek =
+		currentISOWeek >= weeksInCurrentYear
+			? { year: currentISOYear + 1, week: 1 }
+			: { year: currentISOYear, week: currentISOWeek + 1 };
+
+	// Default selection to next week
+	let selectedCreateYear = $state(maxAllowedWeek.year);
+	let selectedCreateWeek = $state(maxAllowedWeek.week);
 
 	// Year options for creation (10 years back, +1 for next year edge case)
 	const createYearOptions = Array.from({ length: 12 }, (_, i) => currentISOYear + 1 - i);
@@ -39,21 +48,11 @@
 	// Date range preview
 	const dateRangePreview = $derived(formatWeekRange(selectedCreateYear, selectedCreateWeek));
 
-	// Validation: max is next week
-	const maxAllowedWeek = $derived.by(() => {
-		const weeksInCurrentYear = getWeeksInYear(currentISOYear);
-		if (currentISOWeek >= weeksInCurrentYear) {
-			return { year: currentISOYear + 1, week: 1 };
-		}
-		return { year: currentISOYear, week: currentISOWeek + 1 };
-	});
-
-	const isValidFutureWeek = $derived.by(() => {
-		if (selectedCreateYear < maxAllowedWeek.year) return true;
-		if (selectedCreateYear === maxAllowedWeek.year && selectedCreateWeek <= maxAllowedWeek.week)
-			return true;
-		return false;
-	});
+	// Validation: selected week must not exceed max allowed
+	const isValidFutureWeek = $derived(
+		selectedCreateYear < maxAllowedWeek.year ||
+			(selectedCreateYear === maxAllowedWeek.year && selectedCreateWeek <= maxAllowedWeek.week)
+	);
 
 	onMount(async () => {
 		await loadWeeks();

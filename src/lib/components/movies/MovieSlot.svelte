@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import type { WeekMovieSelection } from '$lib/api/types';
 	import { getPosterUrl, MOVIE_PLACEHOLDER } from '$lib/utils/images';
 	import { extractYear } from '$lib/utils/dates';
@@ -19,6 +20,18 @@
 			? getPosterUrl(selection.movie.poster_path, 'w342')
 			: null
 	);
+
+	function navigateToMovie(): void {
+		if (selection) {
+			goto(`/movies/${selection.movie.tmdb_id}`);
+		}
+	}
+
+	function handleKeydown(e: KeyboardEvent): void {
+		if (e.key === 'Enter') {
+			navigateToMovie();
+		}
+	}
 </script>
 
 <div class="bg-white dark:bg-stone-800 rounded-md border border-cream-200 dark:border-stone-700 overflow-hidden">
@@ -29,16 +42,28 @@
 
 		{#if selection}
 			<div class="flex gap-4 h-36">
-				<div class="w-24 h-36 flex-shrink-0">
+				<div
+					role="button"
+					tabindex="0"
+					onclick={navigateToMovie}
+					onkeydown={handleKeydown}
+					class="w-24 h-36 flex-shrink-0 cursor-pointer"
+				>
 					<img
 						src={posterUrl || MOVIE_PLACEHOLDER}
 						alt={selection.movie.title}
-						class="w-24 h-36 object-cover rounded"
+						class="w-24 h-36 object-cover rounded hover:ring-2 hover:ring-amber-400 transition-shadow"
 					/>
 				</div>
 				<div class="flex-1 min-w-0 flex flex-col">
-					<div class="flex-1 overflow-hidden">
-						<h4 class="font-semibold text-stone-800 dark:text-cream-100 truncate">
+					<div
+						role="button"
+						tabindex="0"
+						onclick={navigateToMovie}
+						onkeydown={handleKeydown}
+						class="flex-1 overflow-hidden cursor-pointer group"
+					>
+						<h4 class="font-semibold text-stone-800 dark:text-cream-100 truncate group-hover:text-amber-600 dark:group-hover:text-amber-500 transition-colors">
 							{selection.movie.title}
 						</h4>
 						<p class="text-sm text-stone-500 dark:text-stone-400">
