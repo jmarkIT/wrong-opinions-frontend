@@ -22,6 +22,13 @@
 
 	const musicbrainzId = $derived($page.params.musicbrainzId ?? '');
 
+	// Deduplicate artists by musicbrainz_id (API may return same artist multiple times for different roles)
+	const uniqueArtists = $derived(
+		credits?.artists
+			? [...new Map(credits.artists.map((a) => [a.musicbrainz_id, a])).values()]
+			: []
+	);
+
 	onMount(async () => {
 		await loadAlbum();
 	});
@@ -116,11 +123,11 @@
 		</div>
 
 		<!-- Artists -->
-		{#if credits?.artists && credits.artists.length > 0}
+		{#if uniqueArtists.length > 0}
 			<section class="mt-12">
 				<h2 class="text-xl font-semibold text-stone-800 dark:text-cream-100 font-serif mb-4">Artists</h2>
 				<div class="space-y-3">
-					{#each credits.artists as artist}
+					{#each uniqueArtists as artist}
 						<div class="bg-white dark:bg-stone-800 rounded-md border border-cream-200 dark:border-stone-700 p-4">
 							<p class="font-medium text-stone-800 dark:text-cream-100">
 								{artist.sort_name || artist.name}

@@ -99,7 +99,7 @@ This is the frontend application for "Wrong Opinions" - a web application for tr
 ### Data Caching
 The backend caches external API responses. When `cached: true`, some fields may be `null` because only a subset is stored in cache.
 
-**Album Artist Names:** The `album.artist` field in cached data may be incomplete. For authoritative artist information, use the `/albums/{id}/credits` endpoint which returns the full artist credits array. The album details page prioritizes credits data over the cached `album.artist` field.
+**Album Artist Names:** The `album.artist` field in cached data contains the English/romanized name. The `/albums/{id}/credits` endpoint returns detailed artist information including native script names. The album details page prefers `album.artist` for consistent English display, falling back to credits data. The Artists section uses `sort_name` (romanized) as primary with native `name` shown below when different. Artists are deduplicated by `musicbrainz_id` since the API may return duplicates for different roles.
 
 ## Common Frontend Workflows
 
