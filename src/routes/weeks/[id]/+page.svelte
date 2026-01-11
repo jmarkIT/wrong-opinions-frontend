@@ -122,14 +122,6 @@
 			{isUnclaimed}
 		/>
 
-		{#if isOwner}
-			<div class="mb-6">
-				<Button variant="danger" onclick={() => (showDeleteConfirm = true)}>
-					Delete Week
-				</Button>
-			</div>
-		{/if}
-
 		{#if !canEdit}
 			<div class="mb-6 p-3 bg-cream-100 dark:bg-stone-800 rounded-md border border-cream-200 dark:border-stone-700 text-sm text-stone-600 dark:text-stone-400">
 				This week belongs to {week.owner?.username}. You can view but not edit.
@@ -181,6 +173,14 @@
 				</div>
 			</section>
 		</div>
+
+		{#if isOwner}
+			<div class="mt-8">
+				<Button variant="danger" onclick={() => (showDeleteConfirm = true)}>
+					Delete Week
+				</Button>
+			</div>
+		{/if}
 
 		{#if week.notes}
 			<section class="mt-8">

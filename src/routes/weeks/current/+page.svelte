@@ -120,14 +120,6 @@
 			{isUnclaimed}
 		/>
 
-		{#if isOwner}
-			<div class="mb-6">
-				<Button variant="danger" onclick={() => (showDeleteConfirm = true)}>
-					Delete Week
-				</Button>
-			</div>
-		{/if}
-
 		<div class="grid md:grid-cols-2 gap-6">
 			<section>
 				<h2 class="text-lg font-semibold text-stone-700 dark:text-cream-100 mb-4 font-serif">Movies</h2>
@@ -173,6 +165,14 @@
 				</div>
 			</section>
 		</div>
+
+		{#if isOwner}
+			<div class="mt-8">
+				<Button variant="danger" onclick={() => (showDeleteConfirm = true)}>
+					Delete Week
+				</Button>
+			</div>
+		{/if}
 
 		{#if week.notes}
 			<section class="mt-8">
